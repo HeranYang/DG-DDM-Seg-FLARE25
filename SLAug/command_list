@@ -1,0 +1,35 @@
+
+
+conda activate slaug
+
+
+
+
+
+
+# Train
+
+python main.py --base configs/efficientUnet_CHAOS_to_SABSCT_mine.yaml --seed 23
+
+
+python main.py --base configs/efficientUnet_SABSCT_to_CHAOS_mine.yaml --seed 23 --resume logs/2025-06-10T15-50-21_seed23_2025-06-10T01-40-48-project/
+
+
+
+
+# Valid
+
+
+
+
+
+
+# Test
+
+python test.py -r logs/2025-06-10T15-50-21_seed23_2025-06-10T01-40-48-project -s ../dataset
+
+python test_pet.py -r logs/2025-06-10T01-40-48_seed23_2025-06-09T15-37-22-project
+
+python valid.py -r logs/2025-05-31T00-57-29_seed23_efficientUnet_SABSCT_to_CHAOS_mine/
+
+python test_ontrain.py -r logs/2024-03-18T21-40-31_seed23_efficientUnet_SABSCT_to_CHAOS_mine/

@@ -1,0 +1,40 @@
+model:
+  target: segmentation_models_pytorch.Unet
+  params:
+    encoder_name: efficientnet-b2
+    encoder_weights: null
+    in_channels: 1
+    classes: 14
+    activation: null
+    base_learning_rate: null
+    pretrain: null
+
+optimizer:
+  target: torch.optim.Adam
+  learning_rate: 3e-4
+  weight_decay: 3e-5
+  max_epoch: 1200
+  max_iter: -1
+  warmup_iter: -1
+  lr_scheduler: lambda
+
+saliency_balancing_fusion:
+  usage: true
+  grid_size: 3
+
+data:
+  target: main.DataModuleFromConfig
+  params:
+    batch_size: 16
+    num_workers: 8
+
+    validation:
+      target: dataloaders.AbdominalDataset.get_validation
+      params:
+        modality:                     # 这里列出所有 MRI 域
+          - CHAOST2
+        idx_pct: [0.0, 1.0, 0.0]      # 100 % 进验证集，其余为 0
+        tile_z_dim: 1
+
+
+
