@@ -11,8 +11,8 @@ project_root/
 
 ├── inputs/
 
-├── preprocess_training/
-├── preprocess_validation/
+├── preprocess_training.py
+├── preprocess_validation.py
 
 ├── fortrain_pseudolabel.py
 ├── eval_del.m
