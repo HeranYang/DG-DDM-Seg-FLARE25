@@ -1,0 +1,13 @@
+
+conda activate pt
+
+
+
+
+# for Train
+python sr_train.py -p train -c config/SR3_EffNet_train.json
+
+
+
+# for Test
+python sr_test.py -p val -c config/SR3_EffNet_test.json

@@ -1,0 +1,126 @@
+{
+    "name": "SR3 for MRI",
+    "phase": "train", // train or val
+    "gpu_ids": [1],
+    "path": { //set the path
+        "log": "logs",
+        "tb_logger": "tb_logger",
+        "results": "results",
+        "checkpoint": "checkpoint",
+        "resume_state": null
+        // "resume_state": null
+        // "resume_state": "experiments/SR3 for MRI_230226_102346_TrainA_TrainC/checkpoint/I7817776_E1175"
+    },
+    "datasets": {
+        "train": {
+            "name": "Train",
+            "cond_image_sequence":       "image", // "all": use all sequences, "trainA": use sequence A to generate other sequence
+            "output_label_sequence":     "label", // the sequence to be generated
+            "nclass": 14,
+            "dataroot": "/data/FLARE_Challenge/data/multi-modality-data/processing_dataset/step2_saveSlice/CT_to_MR/train",
+            "datatype": "npy", //.npy, type of img files
+            "batch_size": 6, // 16
+            "num_workers": 10, // 8
+            "use_shuffle": true,
+            "data_len": -1 // -1 represents all data used in train
+        },
+        "val": {
+            "name": "Valid",
+            "cond_image_sequence":       "image", // "all": use all sequences, "trainA": use sequence A to generate other sequence
+            "output_label_sequence":     "label", // the sequence to be generated
+            "nclass": 14,
+            "dataroot": "/data/FLARE_Challenge/data/multi-modality-data/processing_dataset/step2_saveSlice/CT_to_MR/train_valid",
+            "datatype": "npy", //nii.gz or npy, type of img files
+            "generation_root": "dataset/results",
+            "data_len": -1
+        }
+    },
+    "model": {
+        "which_model_G": "sr3", // use the ddpm or sr3 network structure
+        "finetune_norm": false,
+        "unet": {
+            "in_channel": 2, //2
+            "out_channel": 1, //1
+            "inner_channel": 64, //64
+            "norm_groups": 16,  //16
+            "channel_multiplier": [
+                1,
+                2,
+                4,
+                8,
+                // 8,
+                // 16,
+                16
+            ],
+            "attn_res": [
+                // 16
+            ],
+            "res_blocks": 1,
+            "dropout": 0
+        },
+        "beta_schedule": { // use munual beta_schedule for acceleration
+            "train": {
+                "schedule": "linear",
+                "n_timestep": 2000,
+                "linear_start": 1e-6,
+                "linear_end": 1e-2
+            },
+            "val": {
+                "schedule": "linear",
+                "n_timestep": 2000,
+                "linear_start": 1e-6,
+                "linear_end": 1e-2
+            }
+        },
+        "diffusion": {
+            "image_size": 192,
+            "channels": 1, //sample channel
+            "conditional": true // unconditional generation or conditional generation
+        }
+    },
+    "segnet": {
+        "model": "efficient_b2_unet",
+        "phase": "train",
+        "continue_train": false,
+        "reload_model_fid": null, 
+        "batchSize": 6,
+        //
+        "lambda_Seg": 1.0,
+        "lambda_wce": 1.0,
+        "lambda_dice": 1.0,
+        "niter": 250,
+        "niter_decay": 9750,
+        "fineSize": 192,
+        "optimizer": "adam",
+        "beta1": 0.5,
+        "lr": 0.0003,
+        "adam_weight_decay": 0.0003,
+        "epoch_count": 1,
+        "lr_policy": "lambda", // step/ plateau
+        "nclass": 14,
+        "lambda_consist": 10.0,
+        "consist_type": "kld",
+        "aug_mode": "strongbright",
+        "results": "results",
+        "checkpoint": "checkpoint"
+    },
+    "train": {
+        "n_iter": 1000000,
+        "n_epoch": 10000,
+        "val_freq": 1, // epoch
+        "save_checkpoint_freq": 1, //epoch
+        "print_freq": 200, //iter
+        "optimizer": {
+            "type": "adam",
+            "lr": 3e-6
+        },
+        "ema_scheduler": { // not used now
+            "step_start_ema": 5000,
+            "update_ema_every": 1,
+            "ema_decay": 0.9999
+        }
+    },
+    "wandb": {
+        "project": "SR3 for MRI"
+    }
+}
